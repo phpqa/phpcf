@@ -5,7 +5,8 @@ MAINTAINER Bart Reunes <metalarend@gmail.com>
 
 ENV COMPOSER_HOME /composer
 ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV PATH /composer/vendor/bin:$PATH
+ENV COMPOSER_BIN_DIR $COMPOSER_HOME/vendor/bin
+ENV PATH $COMPOSER_BIN_DIR:$PATH
 
 RUN curl https://getcomposer.org/installer -o /tmp/composer-setup.php \
     && curl https://composer.github.io/installer.sig -o /tmp/composer-setup.sig \
@@ -19,12 +20,15 @@ RUN curl https://getcomposer.org/installer -o /tmp/composer-setup.php \
 RUN apk add --no-cache tini
 
 # Install PhpCodeFixer - https://github.com/wapmorgan/PhpCodeFixer
+# - dependency: tput
 
 RUN echo "memory_limit=-1" > $PHP_INI_DIR/conf.d/memory-limit.ini
-RUN composer global require --dev wapmorgan/php-code-fixer
+RUN apk add --no-cache ncurses \
+    && composer global require --dev wapmorgan/php-code-fixer \
+    && chmod +x $COMPOSER_BIN_DIR/phpcf
 
 # Package container
 
 VOLUME ["/app"]
 WORKDIR "/app"
-ENTRYPOINT ["/sbin/tini", "--", "php", "/composer/vendor/bin/phpcf"]
+ENTRYPOINT ["/sbin/tini", "--", "phpcf"]
