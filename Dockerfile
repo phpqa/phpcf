@@ -3,7 +3,7 @@
 ARG BASE_IMAGE="php:7.2-alpine"
 ARG PACKAGIST_NAME="wapmorgan/php-code-fixer"
 ARG PHPQA_NAME="phpcf"
-ARG VERSION="2.0.14"
+ARG VERSION="2.0.16"
 
 # Build image
 
